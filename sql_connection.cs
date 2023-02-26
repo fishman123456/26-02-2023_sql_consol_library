@@ -84,11 +84,15 @@ namespace _26_02_2023_sql_consol_library
                     //listBox1.Items.Clear();
                     while (dataReader.Read())
                     {
+                       
                         string data_cw;
                         //listBox1.Items.Add(dataReader[0].ToString() + " - " +
                         //  dataReader[1].ToString());
                         Console.WriteLine(data_cw = dataReader[0].ToString()+ " "+
                             dataReader[1].ToString()+ " "+ dataReader[2].ToString());
+
+                        //Console.WriteLine(dataReader.ToString());
+                        //выводит в консоль Microsoft.Data.SqlClient.SqlDataReader
                     }
                 }
                 catch (Exception e)
