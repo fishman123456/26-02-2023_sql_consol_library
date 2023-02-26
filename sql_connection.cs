@@ -116,10 +116,13 @@ namespace _26_02_2023_sql_consol_library
              Initial Catalog - имя БД 
              Integrated Security=-параметры безопасности
              */
+
             Console.WriteLine("запущен метод Add_data_for_table() \n");
             // Читает строки из базы данных
             // 1. Строка запроса
             string queryStr = "SELECT * FROM [dbo].[Authors]";
+            string not_thousand = "ALTER DATABASE SCOPED CONFIGURATION " +
+                "SET IDENTITY_CACHE = OFF";
 
             // 2. Строка подключения
             string connStr = @"Data Source = (localdb)\MSSQLLocalDB; " +
@@ -147,7 +150,7 @@ namespace _26_02_2023_sql_consol_library
              добавление строки в  таблицу Students
              и объект типа SqlConnection
             */
-
+            SqlCommand cmd_n = new SqlCommand(not_thousand, conn);
             SqlCommand cmd = new SqlCommand("Insert into Authors" +
             "( FirstName, LastName) Values" +
             " ( @FirstName, @LastName)", conn);
@@ -193,6 +196,7 @@ namespace _26_02_2023_sql_consol_library
             }
             //Выводим значение на экран
             cmd = new SqlCommand("Select * From Authors", conn);
+
             /*Метод ExecuteReader() класса SqlCommand возврашает
              объект типа SqlDataReader, с помошью которого мы можем
              прочитать все строки, возврашенные в результате выполнения запроса
@@ -265,11 +269,19 @@ namespace _26_02_2023_sql_consol_library
             param.ParameterName = "@Id";
             //задаем значение параметра
             Console.WriteLine("\n Введите номер записи для удаления: ");
-            param.Value = Int32.Parse(Console.ReadLine());
+            int id_db;
+            
+            while (!int.TryParse(Console.ReadLine(), out id_db))
+                {
+                Console.WriteLine("Введите число которое в списке Id");
+                //Console.ReadLine();
+            }
+            param.Value = id_db;
+
             //задаем тип параметра
             param.SqlDbType = SqlDbType.Int;
             //передаем параметр объекту класса SqlCommand
-           
+
 
             cmd.Parameters.Add(param);
 

@@ -1,0 +1,27 @@
+﻿USE [Library]
+GO
+
+/****** Объект: Table [dbo].[Authors] Дата скрипта: 26.02.2023 22:34:37 ******/
+SET ANSI_NULLS ON
+GO
+
+
+use Library
+CREATE TABLE Authors
+(
+	id INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+	FirstName NVARCHAR(50) NOT NULL,
+	LastName NVARCHAR(50) NOT NULL
+)
+
+use Library
+CREATE TABLE Books
+(
+	id INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+	AuthorId INT NOT NULL,
+	FOREIGN KEY (AuthorId) REFERENCES Authors(id),
+	Title NVARCHAR(100) NOT NULL,
+	Price INT,
+	Pages INT
+)
+ALTER DATABASE SCOPED CONFIGURATION SET IDENTITY_CACHE = OFF
