@@ -20,3 +20,4 @@ using System.Data;
 Sql_work.Create_SQL_Connection();
 Sql_work.Get_Data_From_Data_Base();
 Sql_work.Add_data_for_table();
+Sql_work.Del_data_for_table();

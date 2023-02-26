@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
+using System.ComponentModel;
 
 namespace _26_02_2023_sql_consol_library
 {
@@ -46,7 +47,7 @@ namespace _26_02_2023_sql_consol_library
                 {
                     // Закрыть подключение
                     connection.Close();
-                    Console.WriteLine("Connection is closed..."+"\n");
+                    Console.WriteLine("Connection is closed..." + "\n");
                 }
 
             }
@@ -84,12 +85,12 @@ namespace _26_02_2023_sql_consol_library
                     //listBox1.Items.Clear();
                     while (dataReader.Read())
                     {
-                       
+
                         string data_cw;
                         //listBox1.Items.Add(dataReader[0].ToString() + " - " +
                         //  dataReader[1].ToString());
-                        Console.WriteLine(data_cw = dataReader[0].ToString()+ " "+
-                            dataReader[1].ToString()+ " "+ dataReader[2].ToString());
+                        Console.WriteLine(data_cw = dataReader[0].ToString() + " " +
+                            dataReader[1].ToString() + " " + dataReader[2].ToString());
 
                         //Console.WriteLine(dataReader.ToString());
                         //выводит в консоль Microsoft.Data.SqlClient.SqlDataReader
@@ -97,7 +98,7 @@ namespace _26_02_2023_sql_consol_library
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine (e.Message);
+                    Console.WriteLine(e.Message);
                 }
                 finally
                 {
@@ -115,7 +116,7 @@ namespace _26_02_2023_sql_consol_library
              Initial Catalog - имя БД 
              Integrated Security=-параметры безопасности
              */
-            Console.WriteLine("запущен метод Add_data_for_table()");
+            Console.WriteLine("запущен метод Add_data_for_table() \n");
             // Читает строки из базы данных
             // 1. Строка запроса
             string queryStr = "SELECT * FROM [dbo].[Authors]";
@@ -155,15 +156,16 @@ namespace _26_02_2023_sql_consol_library
              но требует и больших усилий в написании кода*/
             //объявляем объект класса SqlParameter
             SqlParameter param = new SqlParameter();
-            
+
             //переопределяем объект класса SqlParameter
             param = new SqlParameter();
             //задаем имя параметра
             param.ParameterName = "@FirstName";
             //задаем значение параметра
-            param.Value = "N 'Карл'";
+            Console.WriteLine("Введите имя для добавления в таблицу:  ");
+            param.Value = Console.ReadLine();
             //задаем тип параметра
-            param.SqlDbType = SqlDbType.Text;
+            param.SqlDbType = SqlDbType.NVarChar;
             //передаем параметр объекту класса SqlCommand
             cmd.Parameters.Add(param);
 
@@ -172,9 +174,10 @@ namespace _26_02_2023_sql_consol_library
             //задаем имя параметра
             param.ParameterName = "@LastName";
             //задаем значение параметра
-            param.Value = "N 'Маркс'";
+            Console.WriteLine("Введите фамилию для добавления в таблицу:  ");
+            param.Value = Console.ReadLine();
             //задаем тип параметра
-            param.SqlDbType = SqlDbType.Text;
+            param.SqlDbType = SqlDbType.NVarChar;
             //передаем параметр объекту класса SqlCommand
             cmd.Parameters.Add(param);
 
@@ -225,6 +228,101 @@ namespace _26_02_2023_sql_consol_library
             Console.WriteLine();
         }
 
-    }
+        public static void Del_data_for_table()
+        {
+            Console.WriteLine("запущен метод Del_data_for_table() \n");
 
+            string connStr = @"Data Source = (localdb)\MSSQLLocalDB; " +
+      "Initial Catalog = Library; Integrated Security = True";
+
+            SqlConnection conn = new SqlConnection(connStr);
+            try
+            {
+                //пробуем подключится
+                conn.Open();
+            }
+            catch (SqlException se)
+            {
+                Console.WriteLine("Ошибка подключения:{0}", se.Message);
+                return;
+            }
+
+            Console.WriteLine("Соедение успешно произведено");
+            /*Создаем экземпляр класса  SqlCommand по имени cmdCreateTable
+             и передаем конструктору этого класса, запрос на 
+             удаление строк таблицы Students, которые отвечают условиям
+             и объект типа SqlConnection
+            */
+
+            SqlCommand cmd = new SqlCommand("Delete From Authors" +
+                " where Id = @Id ", conn);
+            /*Работаем с параметрами(SqlParameter), эта техника позволяет уменьшить
+              кол-во ошибок и достичь большего быстродействия
+               но требует и больших усилий в написании кода*/
+            //объявляем объект класса SqlParameter
+            SqlParameter param = new SqlParameter();
+            //задаем имя параметра
+            param.ParameterName = "@Id";
+            //задаем значение параметра
+            Console.WriteLine("\n Введите номер записи для удаления: ");
+            param.Value = Int32.Parse(Console.ReadLine());
+            //задаем тип параметра
+            param.SqlDbType = SqlDbType.Int;
+            //передаем параметр объекту класса SqlCommand
+           
+
+            cmd.Parameters.Add(param);
+
+            Console.WriteLine("Удаляем запись");
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                Console.WriteLine("Ошибка, при выполнении запроса на удаление записи");
+                Console.WriteLine("Возможно запись уже удалена");
+
+                return;
+            }
+            //Выводим значение на экран
+            cmd = new SqlCommand("Select * From Authors", conn);
+            /*Метод ExecuteReader() класса SqlCommand возврашает
+             объект типа SqlDataReader, с помошью которого мы можем
+             прочитать все строки, возврашенные в результате выполнения запроса
+             CommandBehavior.CloseConnection - закрываем соединение после запроса
+             */
+            using (SqlDataReader dr = cmd.ExecuteReader(CommandBehavior.CloseConnection))
+            {
+                //цикл по всем столбцам полученной в результате запроса таблицы
+                for (int i = 0; i < dr.FieldCount; i++)
+                    /*метод GetName() класса SqlDataReader позволяет получить имя столбца
+                     по номеру, который передается в качестве параметра, данному методу
+                     и озночает номер столбца в таблице(начинается с 0)
+                     */
+                    Console.Write("{0}\t", dr.GetName(i).ToString().Trim());
+                /*читаем данные из таблицы
+                 чтение происходит только в прямом направлении
+                 все прочитаные строки отбрасываюся */
+                Console.WriteLine();
+                while (dr.Read())
+                {
+                    /*метод GetValue() класса SqlDataReader позволяет 
+                     * получить значение столбца
+                      по номеру, который передается в качестве параметра, данному методу
+                      и озночает номер столбца в таблице(начинается с 0)
+                                            */
+                    Console.WriteLine("{0}\t{1}\t{2}", dr.GetValue(0).ToString().Trim(),
+                     dr.GetValue(1).ToString().Trim(),
+                     dr.GetValue(2).ToString().Trim());
+                }
+            }
+            //закрвываем соединение
+            conn.Close();
+            conn.Dispose();
+            Console.WriteLine();
+        }
+
+    }
 }
+
